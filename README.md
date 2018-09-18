@@ -19,7 +19,7 @@ This is a single page application featuring a map of my neighborhood. It include
 Clone the github directory
 
 ```bash
-git clone <url>
+git clone https://github.com/Scheercuzy/Neighborhood-Map.git
 ```
 
 Once cloned, open the `index.html` file and start using!
