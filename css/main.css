@@ -1,0 +1,87 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0px;
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  background-color: #272b30;
+  overflow-x: hidden;
+}
+
+.sidenav-close {
+  text-align: right;
+  padding-right: 10px;
+  visibility: visible;
+  cursor: pointer;
+}
+
+.sidenav-title {
+  background-color: #343a40;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  color: white;
+}
+
+.sidenav-search {
+  padding: 10px;
+}
+
+.sidenav-items {
+  padding: 5px;
+}
+
+.menu-btn {
+  position: absolute;
+  visibility: visible;
+  z-index: 1;
+  margin: 10px;
+  padding: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: #ffffff;
+  color: #666666;
+  font-size: 1.5em;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  border-bottom-left-radius: 2px;
+  box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
+  cursor: pointer;
+}
+
+.map-area {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  right: 0;
+}
+
+#map {
+  height: 100%;
+}
+
+@media screen and (min-width: 750px) {
+  .sidenav {
+    width: 300px;
+  }
+  .sidenav-close {
+    visibility: hidden;
+  }
+  .menu-btn {
+    visibility: hidden;
+  }
+  .map-area {
+    left: 300px;
+  }
+}
