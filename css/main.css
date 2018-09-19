@@ -67,7 +67,7 @@ body {
   right: 0;
 }
 
-#map {
+.map-canvas {
   height: 100%;
 }
 

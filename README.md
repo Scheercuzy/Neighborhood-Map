@@ -13,6 +13,7 @@ This is a single page application featuring a map of my neighborhood. It include
 - Bootstrap
 - KnockoutJS
 - Google Maps API
+- Foursquare API
 
 ## Usage
 

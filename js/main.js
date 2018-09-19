@@ -1,3 +1,4 @@
+"use strict";
 // Global variables
 var map;
 var infoWindow;
@@ -5,17 +6,21 @@ var bounds;
 
 // Google Map initMap Callback function
 function initMap() {
-  // coordinates of Yangon
-  var yangon = {
-    lat: 16.811945,
-    lng: 96.164325
-  };
+  // Constants
+  var CONSTANTS = {
+    "MAP_ZOOM": 13,
+    "MAP_CENTER": {
+      lat: 16.811945,
+      lng: 96.164325
+    },
+    "MAP_TYPE_CONTROL": false
+  }
 
   // create map element
   map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 13,
-    center: yangon,
-    mapTypeControl: false
+    zoom: CONSTANTS.MAP_ZOOM,
+    center: CONSTANTS.MAP_CENTER,
+    mapTypeControl: CONSTANTS.MAP_TYPE_CONTROL
   });
 
   infoWindow = new google.maps.InfoWindow();
@@ -70,7 +75,8 @@ var LocationMarker = function(data) {
 
   this.title = data.title;
   this.position = data.coord;
-  this.placeId = data.placeId;
+  this.address = "";
+  this.city = "";
 
   this.visible = ko.observable(true);
 
@@ -92,6 +98,38 @@ var LocationMarker = function(data) {
     ...defaultIconVar
   };
 
+  // Get Data from Foursquqre
+  var clientID = "UXTATIOBDA5ND1NBMIOKHA2B3JWEYPEIAZ4OHF52APGXKGPG";
+  var clientSecret = "XGFAFJA2F35LJAFCXNRDVMIV1MYM1KHXVTANEUCPK5ZT0Q04";
+
+  // get JSON request of Foursquare data
+  var reqURL =
+    "https://api.foursquare.com/v2/venues/search?ll=" +
+    this.position.lat +
+    "," +
+    this.position.lng +
+    "&client_id=" +
+    clientID +
+    "&client_secret=" +
+    clientSecret +
+    "&v=20180919" +
+    "&query=" +
+    this.title;
+
+  $.getJSON(reqURL)
+    .done(function(data) {
+      var results = data.response.venues[0];
+      self.address = results.location.formattedAddress[0]
+        ? results.location.formattedAddress[0]
+        : "N/A";
+      self.city = results.location.formattedAddress[1]
+        ? results.location.formattedAddress[1]
+        : "N/A";
+    })
+    .fail(function() {
+      alert("Something went wrong with foursquare");
+    });
+
   // Create a new marker
   this.marker = new google.maps.Marker({
     position: this.position,
@@ -105,16 +143,17 @@ var LocationMarker = function(data) {
     // Set marker and extend bounds
     if (self.visible() === true) {
       self.marker.setMap(map);
+      self.marker.setVisible(true)
       bounds.extend(self.marker.position);
       map.fitBounds(bounds);
     } else {
-      self.marker.setMap(null);
+      self.marker.setVisible(false);
     }
   });
 
   // Create an onclick even to open the infowindow
   this.marker.addListener("click", function() {
-    infoWindowContent(this, self.placeId, infoWindow);
+    infoWindowContent(this, self.address, self.city, infoWindow);
     toggleMarkerBounce(this);
     map.panTo(this.getPosition());
   });
@@ -134,7 +173,7 @@ var LocationMarker = function(data) {
 };
 
 // Info Window Content
-function infoWindowContent(marker, placeId, infowindow) {
+function infoWindowContent(marker, address, city, infowindow) {
   if (infowindow.marker != marker) {
     infowindow.setContent("");
     infowindow.marker = marker;
@@ -143,27 +182,10 @@ function infoWindowContent(marker, placeId, infowindow) {
       infowindow.marker = null;
     });
 
-    placeService = new google.maps.places.PlacesService(map);
+    var windowContent = `<h4>${marker.title}</h4><p>${address}</p><p>${city}</p>`
 
-    // Gets detail on the fly based on the marker selected
-    placeService.getDetails(
-      {
-        placeId: placeId
-      },
-      function(place, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-          var address = place.formatted_address
-            ? place.formatted_address
-            : "N/A";
-
-          var windowContent =
-            "<h4>" + marker.title + "</h4>" + "<p>" + address + "</p>";
-
-          infowindow.setContent(windowContent);
-          infowindow.open(map, marker);
-        }
-      }
-    );
+    infowindow.setContent(windowContent);
+    infowindow.open(map, marker);
   }
 }
 
